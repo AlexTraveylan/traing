@@ -5,7 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuthStore } from "@/lib/store/authStore"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 export default function Emargement() {
   const { user } = useAuthStore()
@@ -17,13 +17,7 @@ export default function Emargement() {
     heure: string
   } | null>(null)
 
-  useEffect(() => {
-    if (user) {
-      verifierStatutEmargement()
-    }
-  }, [user])
-
-  const verifierStatutEmargement = async () => {
+  const verifierStatutEmargement = useCallback(async () => {
     try {
       const reponse = await fetch(`/api/emargement/status/${user?.id}`)
       const donnees = await reponse.json()
@@ -37,7 +31,13 @@ export default function Emargement() {
         erreur
       )
     }
-  }
+  }, [user?.id])
+
+  useEffect(() => {
+    if (user) {
+      verifierStatutEmargement()
+    }
+  }, [user, verifierStatutEmargement])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -57,6 +57,7 @@ export default function Emargement() {
         setMessage(resultat.message)
       }
     } catch (erreur) {
+      console.error("Erreur lors de l'émargement:", erreur)
       setMessage("Une erreur s'est produite lors de l'émargement.")
     } finally {
       setIsLoading(false)

@@ -15,12 +15,9 @@ export async function POST(request: NextRequest) {
   try {
     const newUser = await createUser(username, password, avatar)
 
-    // On ne renvoie pas le mot de passe haché
-    const { password: _, ...userWithoutPassword } = newUser
-
     return NextResponse.json({
       message: "Utilisateur créé avec succès",
-      user: userWithoutPassword,
+      user: newUser,
     })
   } catch (error) {
     console.error("Erreur lors de l'enregistrement:", error)

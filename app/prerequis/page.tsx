@@ -29,7 +29,6 @@ export default function Prerequis() {
   const [answers, setAnswers] = useState<PrerequisAnswers | null>(null)
   const { user } = useAuthStore()
   const [hasSubmitted, setHasSubmitted] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const checkSubmissionStatus = async () => {
@@ -49,8 +48,6 @@ export default function Prerequis() {
             "Erreur lors de la vérification du statut de soumission:",
             error
           )
-        } finally {
-          setIsLoading(false)
         }
       }
     }
@@ -85,6 +82,7 @@ export default function Prerequis() {
           throw new Error("Erreur lors de l'enregistrement")
         }
       } catch (error) {
+        console.error("Erreur lors de l'enregistrement des réponses:", error)
         alert("Une erreur est survenue lors de l'enregistrement des réponses.")
       }
     }
