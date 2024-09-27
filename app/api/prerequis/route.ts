@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
     await savePrerequisAnswers(userId, answers)
     return NextResponse.json({ message: "Réponses enregistrées avec succès" })
   } catch (error) {
+    console.error(error)
     return NextResponse.json(
       { error: "Une erreur est survenue lors de l'enregistrement" },
       { status: 500 }
@@ -29,6 +30,7 @@ export async function GET(request: NextRequest) {
     const answers = await getAllPrerequisAnswers()
     return NextResponse.json({ answers })
   } catch (error) {
+    console.error(error)
     return NextResponse.json(
       { error: "Une erreur est survenue lors de la récupération des réponses" },
       { status: 500 }
