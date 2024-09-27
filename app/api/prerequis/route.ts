@@ -1,6 +1,7 @@
 import { getAllPrerequisAnswers, savePrerequisAnswers } from "@/lib/prerequis"
 import { NextRequest, NextResponse } from "next/server"
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function POST(request: NextRequest) {
   const { userId, answers } = await request.json()
 
@@ -22,6 +23,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(request: NextRequest) {
   try {
     const answers = await getAllPrerequisAnswers()
