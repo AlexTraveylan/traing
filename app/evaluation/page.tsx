@@ -12,20 +12,21 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Textarea } from "@/components/ui/textarea"
-import { EvaluationRecord, evaluationSchema } from "@/lib/evaluation"
+import { evaluationSchema } from "@/lib/evaluation"
 import { useAuthStore } from "@/lib/store/authStore"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Evaluation } from "@prisma/client"
 import { Star } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 
-export default function Evaluation() {
+export default function EvaluationPage() {
   const [rating, setRating] = useState(0)
   const { user } = useAuthStore()
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const [previousSubmission, setPreviousSubmission] =
-    useState<EvaluationRecord | null>(null)
+    useState<Evaluation | null>(null)
 
   const form = useForm<z.infer<typeof evaluationSchema>>({
     resolver: zodResolver(evaluationSchema),
@@ -79,18 +80,25 @@ export default function Evaluation() {
         <div className="container mx-auto p-4">
           <h1 className="text-2xl font-bold mb-4">Évaluation déjà soumise</h1>
           <p>
-            Vous avez déjà soumis une évaluation le{" "}
-            {new Date(previousSubmission.date).toLocaleString()}.
+            {"Vous avez déjà soumis une évaluation le "}
+            {new Date(previousSubmission.createdAt).toLocaleString()}.
           </p>
           <h2 className="text-xl font-semibold mt-4 mb-2">
-            Récapitulatif de vos réponses :
+            {"Récapitulatif de vos réponses :"}
           </h2>
           <ul>
             <li>
-              Niveau de compréhension : {previousSubmission.comprehension}/5
+              {"Niveau de compréhension : "}
+              {previousSubmission.comprehension}/5
             </li>
-            <li>Difficultés rencontrées : {previousSubmission.difficultes}</li>
-            <li>Commentaires : {previousSubmission.commentaires || "Aucun"}</li>
+            <li>
+              {"Difficultés rencontrées : "}
+              {previousSubmission.difficultes}
+            </li>
+            <li>
+              {"Commentaires : "}
+              {previousSubmission.commentaires || "Aucun"}
+            </li>
           </ul>
         </div>
       </ProtectedRoute>
@@ -100,7 +108,7 @@ export default function Evaluation() {
   return (
     <ProtectedRoute>
       <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">Évaluation quotidienne</h1>
+        <h1 className="text-2xl font-bold mb-4">{"Évaluation quotidienne"}</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
@@ -108,7 +116,7 @@ export default function Evaluation() {
               name="comprehension"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Niveau de compréhension (1-5) :</FormLabel>
+                  <FormLabel>{"Niveau de compréhension (1-5) :"}</FormLabel>
                   <FormControl>
                     <div className="flex">
                       {[1, 2, 3, 4, 5].map((star) => (
@@ -128,8 +136,9 @@ export default function Evaluation() {
                     </div>
                   </FormControl>
                   <FormDescription>
-                    Cliquez sur les étoiles pour évaluer votre niveau de
-                    compréhension
+                    {
+                      "Cliquez sur les étoiles pour évaluer votre niveau de compréhension"
+                    }
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -140,7 +149,7 @@ export default function Evaluation() {
               name="difficultes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Difficultés rencontrées :</FormLabel>
+                  <FormLabel>{"Difficultés rencontrées :"}</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -153,7 +162,7 @@ export default function Evaluation() {
               name="commentaires"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Commentaires supplémentaires :</FormLabel>
+                  <FormLabel>{"Commentaires supplémentaires :"}</FormLabel>
                   <FormControl>
                     <Textarea placeholder="Optionnel" {...field} />
                   </FormControl>
@@ -161,7 +170,7 @@ export default function Evaluation() {
                 </FormItem>
               )}
             />
-            <Button type="submit">Soumettre l'évaluation</Button>
+            <Button type="submit">{"Soumettre l'évaluation"}</Button>
           </form>
         </Form>
       </div>

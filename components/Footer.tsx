@@ -11,20 +11,21 @@ export default function Footer() {
           <div className="flex flex-col items-center">
             <h3 className="text-lg font-semibold mb-4">À propos</h3>
             <p className="text-gray-600">
-              Ma plateforme de gestion de formation offre des outils innovants
-              pour suivre et améliorer vos parcours d'apprentissage.
+              {
+                "Ma plateforme de gestion de formation offre des outils innovants pour suivre et améliorer vos parcours d'apprentissage."
+              }
             </p>
           </div>
 
           <div className="flex flex-col items-center">
-            <h3 className="text-lg font-semibold mb-4">Liens rapides</h3>
+            <h3 className="text-lg font-semibold mb-4">{"Liens rapides"}</h3>
             <ul className="space-y-2">
               <li>
                 <Link
                   href="/emargement"
                   className="text-gray-600 hover:text-gray-900 transition-colors"
                 >
-                  Émargement
+                  {"Émargement"}
                 </Link>
               </li>
               <li>
@@ -32,7 +33,7 @@ export default function Footer() {
                   href="/prerequis"
                   className="text-gray-600 hover:text-gray-900 transition-colors"
                 >
-                  Prérequis
+                  {"Prérequis"}
                 </Link>
               </li>
               <li>
@@ -40,16 +41,18 @@ export default function Footer() {
                   href="/evaluation"
                   className="text-gray-600 hover:text-gray-900 transition-colors"
                 >
-                  Évaluation
+                  {"Évaluation"}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div className="flex flex-col items-center">
-            <h3 className="text-lg font-semibold mb-4">Formateur</h3>
-            <p className="text-gray-600">Email: timothee.Demares@gmail.com</p>
-            <p className="text-gray-600">Tél: 0762457593</p>
+            <h3 className="text-lg font-semibold mb-4">{"Formateur"}</h3>
+            <p className="text-gray-600">
+              {"Email: timothee.Demares@gmail.com"}
+            </p>
+            <p className="text-gray-600">{"Tél: 0762457593"}</p>
             <Link
               href="https://www.alextraveylan.fr"
               className="text-gray-600 hover:text-gray-900 transition-colors"

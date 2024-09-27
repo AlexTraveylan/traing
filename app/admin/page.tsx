@@ -10,20 +10,14 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { users } from "@/lib/auth"
-import { Signature } from "@/lib/emargement"
-import { defaultEvaluationAnswers, EvaluationRecord } from "@/lib/evaluation"
-import { defaultPrerequisAnswers, PrerequisRecord } from "@/lib/prerequis"
+import { Emargement, Evaluation, Prerequis, User } from "@prisma/client"
 import { useEffect, useState } from "react"
 
 const AdminPage = () => {
-  const [prerequis, setPrerequisData] = useState<
-    Record<number, PrerequisRecord>
-  >({})
-  const [evaluations, setEvaluationsData] = useState<
-    Record<number, EvaluationRecord>
-  >({})
-  const [signatures, setSignaturesData] = useState<Signature[]>([])
+  const [prerequis, setPrerequisData] = useState<Prerequis[]>([])
+  const [evaluations, setEvaluationsData] = useState<Evaluation[]>([])
+  const [signatures, setSignaturesData] = useState<Emargement[]>([])
+  const [users, setUsers] = useState<User[]>([])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,7 +31,11 @@ const AdminPage = () => {
 
       const signaturesResponse = await fetch("/api/emargement")
       const signaturesData = await signaturesResponse.json()
-      setSignaturesData(signaturesData.signatures)
+      setSignaturesData(signaturesData.emargements)
+
+      const usersResponse = await fetch("/api/auth/users")
+      const usersData = await usersResponse.json()
+      setUsers(usersData.users)
     }
 
     fetchData()
@@ -78,7 +76,8 @@ const AdminPage = () => {
                 <TableBody>
                   {users.map((user) => {
                     const userPrereq =
-                      prerequis[user.id] || defaultPrerequisAnswers
+                      prerequis.find((p) => p.userId === user.id) ||
+                      ({} as Prerequis)
                     return (
                       <TableRow key={user.id}>
                         <TableCell>{user.username}</TableCell>
@@ -89,7 +88,9 @@ const AdminPage = () => {
                         <TableCell>{userPrereq.numpy}</TableCell>
                         <TableCell>{userPrereq.materiel}</TableCell>
                         <TableCell>
-                          {new Date(userPrereq.date).toLocaleString()}
+                          {userPrereq.createdAt
+                            ? new Date(userPrereq.createdAt).toLocaleString()
+                            : "-"}
                         </TableCell>
                       </TableRow>
                     )
@@ -119,7 +120,8 @@ const AdminPage = () => {
                 <TableBody>
                   {users.map((user) => {
                     const userEval =
-                      evaluations[user.id] || defaultEvaluationAnswers
+                      evaluations.find((e) => e.userId === user.id) ||
+                      ({} as Evaluation)
                     return (
                       <TableRow key={user.id}>
                         <TableCell>{user.username}</TableCell>
@@ -127,7 +129,9 @@ const AdminPage = () => {
                         <TableCell>{userEval.difficultes}</TableCell>
                         <TableCell>{userEval.commentaires || "-"}</TableCell>
                         <TableCell>
-                          {new Date(userEval.date).toLocaleString()}
+                          {userEval.createdAt
+                            ? new Date(userEval.createdAt).toLocaleString()
+                            : "-"}
                         </TableCell>
                       </TableRow>
                     )
@@ -160,8 +164,12 @@ const AdminPage = () => {
                         <TableCell>
                           {user ? user.username : "Inconnu"}
                         </TableCell>
-                        <TableCell>{signature.date}</TableCell>
-                        <TableCell>{signature.time}</TableCell>
+                        <TableCell>
+                          {new Date(signature.date).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          {new Date(signature.date).toLocaleTimeString()}
+                        </TableCell>
                       </TableRow>
                     )
                   })}

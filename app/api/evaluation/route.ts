@@ -3,26 +3,27 @@ import {
   evaluationSchema,
   getAllEvaluations,
 } from "@/lib/evaluation"
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 
-export async function POST(request: NextRequest) {
-  const body = await request.json()
-  const { userId, ...data } = body
+export async function POST(request: Request) {
+  const { userId, ...data } = await request.json()
 
-  if (!userId) {
-    return NextResponse.json({ error: "UserId manquant" }, { status: 400 })
+  const result = evaluationSchema.safeParse(data)
+
+  if (!result.success) {
+    return NextResponse.json({ error: result.error.errors }, { status: 400 })
   }
 
-  const validationResult = evaluationSchema.safeParse(data)
-  if (!validationResult.success) {
-    return NextResponse.json({ error: "Données invalides" }, { status: 400 })
+  try {
+    const evaluation = await addEvaluation(userId, result.data)
+    return NextResponse.json(evaluation)
+  } catch (error) {
+    console.error("Erreur lors de l'ajout de l'évaluation:", error)
+    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 })
   }
-
-  addEvaluation(userId, validationResult.data)
-  return NextResponse.json({ message: "Réponse enregistrée avec succès" })
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   const allEvaluations = getAllEvaluations()
   return NextResponse.json(allEvaluations)
 }

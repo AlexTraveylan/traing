@@ -11,12 +11,25 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  savePrerequisAnswers(userId, answers)
-
-  return NextResponse.json({ message: "Réponses enregistrées avec succès" })
+  try {
+    await savePrerequisAnswers(userId, answers)
+    return NextResponse.json({ message: "Réponses enregistrées avec succès" })
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Une erreur est survenue lors de l'enregistrement" },
+      { status: 500 }
+    )
+  }
 }
 
 export async function GET(request: NextRequest) {
-  const answers = getAllPrerequisAnswers()
-  return NextResponse.json({ answers })
+  try {
+    const answers = await getAllPrerequisAnswers()
+    return NextResponse.json({ answers })
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Une erreur est survenue lors de la récupération des réponses" },
+      { status: 500 }
+    )
+  }
 }

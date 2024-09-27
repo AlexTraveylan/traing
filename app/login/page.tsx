@@ -77,8 +77,8 @@ export default function LoginPage() {
   return (
     <Card className="max-w-md mx-auto mt-10">
       <CardHeader>
-        <CardTitle>Connexion</CardTitle>
-        <CardDescription>Connectez-vous à votre compte</CardDescription>
+        <CardTitle>{"Connexion"}</CardTitle>
+        <CardDescription>{"Connectez-vous à votre compte"}</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -88,7 +88,7 @@ export default function LoginPage() {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>{"Username"}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -101,7 +101,7 @@ export default function LoginPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mot de passe</FormLabel>
+                  <FormLabel>{"Mot de passe"}</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
@@ -113,7 +113,7 @@ export default function LoginPage() {
                 </FormItem>
               )}
             />
-            <Button type="submit">Se connecter</Button>
+            <Button type="submit">{"Se connecter"}</Button>
           </form>
         </Form>
       </CardContent>

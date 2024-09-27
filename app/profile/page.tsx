@@ -10,8 +10,11 @@ export default function ProfilePage() {
       <h1 className="text-2xl font-bold mb-4">Profile</h1>
       <div className="flex items-center gap-4">
         <Avatar>
-          <AvatarImage src={user?.avatar} alt={user?.username} />
-          <AvatarFallback>{user?.username?.[0]}</AvatarFallback>
+          <AvatarImage
+            src={user?.avatar ?? undefined}
+            alt={user?.username ?? ""}
+          />
+          <AvatarFallback>{user?.username?.[0] ?? ""}</AvatarFallback>
         </Avatar>
         <h2>{user?.username}</h2>
       </div>

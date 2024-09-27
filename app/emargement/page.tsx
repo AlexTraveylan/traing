@@ -11,30 +11,30 @@ export default function Emargement() {
   const { user } = useAuthStore()
   const [message, setMessage] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [hasSigned, setHasSigned] = useState(false)
-  const [signatureInfo, setSignatureInfo] = useState<{
+  const [aEmarger, setAEmarger] = useState(false)
+  const [infoEmargement, setInfoEmargement] = useState<{
     date: string
-    time: string
+    heure: string
   } | null>(null)
 
   useEffect(() => {
     if (user) {
-      checkSignatureStatus()
+      verifierStatutEmargement()
     }
   }, [user])
 
-  const checkSignatureStatus = async () => {
+  const verifierStatutEmargement = async () => {
     try {
-      const response = await fetch(`/api/emargement/status?userId=${user?.id}`)
-      const data = await response.json()
-      if (data.hasSigned) {
-        setHasSigned(true)
-        setSignatureInfo(data.signatureInfo)
+      const reponse = await fetch(`/api/emargement/status/${user?.id}`)
+      const donnees = await reponse.json()
+      if (donnees.aEmarger) {
+        setAEmarger(true)
+        setInfoEmargement(donnees.infoEmargement)
       }
-    } catch (error) {
+    } catch (erreur) {
       console.error(
-        "Erreur lors de la vérification du statut de signature:",
-        error
+        "Erreur lors de la vérification du statut d'émargement:",
+        erreur
       )
     }
   }
@@ -43,20 +43,20 @@ export default function Emargement() {
     e.preventDefault()
     setIsLoading(true)
     try {
-      const response = await fetch("/api/emargement", {
+      const reponse = await fetch("/api/emargement", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user?.id }),
       })
-      const result = await response.json()
-      if (result.success) {
+      const resultat = await reponse.json()
+      if (resultat.success) {
         setMessage("Émargement enregistré avec succès !")
-        setHasSigned(true)
-        await checkSignatureStatus()
+        setAEmarger(true)
+        await verifierStatutEmargement()
       } else {
-        setMessage(result.message)
+        setMessage(resultat.message)
       }
-    } catch (error) {
+    } catch (erreur) {
       setMessage("Une erreur s'est produite lors de l'émargement.")
     } finally {
       setIsLoading(false)
@@ -67,21 +67,21 @@ export default function Emargement() {
     <ProtectedRoute>
       <Card className="w-[350px] mx-auto mt-10">
         <CardHeader>
-          <CardTitle>Émargement quotidien</CardTitle>
+          <CardTitle>{"Émargement quotidien"}</CardTitle>
         </CardHeader>
         <CardContent>
-          {hasSigned ? (
+          {aEmarger ? (
             <Alert>
-              <AlertTitle>Vous avez déjà émargé aujourd'hui</AlertTitle>
+              <AlertTitle>{"Vous avez déjà émargé aujourd'hui"}</AlertTitle>
               <AlertDescription>
-                Date : {signatureInfo?.date}
+                Date : {infoEmargement?.date}
                 <br />
-                Heure : {signatureInfo?.time}
+                Heure : {infoEmargement?.heure}
               </AlertDescription>
             </Alert>
           ) : (
             <form onSubmit={handleSubmit}>
-              <Button type="submit" disabled={isLoading || hasSigned}>
+              <Button type="submit" disabled={isLoading || aEmarger}>
                 {isLoading ? "Chargement..." : "Émarger"}
               </Button>
             </form>

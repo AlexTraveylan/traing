@@ -34,13 +34,24 @@ export default function Prerequis() {
   useEffect(() => {
     const checkSubmissionStatus = async () => {
       if (user) {
-        const response = await fetch(`/api/prerequis/${user.id}`)
-        const data = await response.json()
-        setHasSubmitted(data.hasSubmitted)
-        if (data.hasSubmitted) {
-          setAnswers(data.answers)
+        try {
+          const response = await fetch(`/api/prerequis/${user.id}`)
+          const data = await response.json()
+          setHasSubmitted(data.hasSubmitted)
+          if (data.hasSubmitted) {
+            setAnswers({
+              ...data.answers,
+              dateSubmission: data.answers.createdAt,
+            })
+          }
+        } catch (error) {
+          console.error(
+            "Erreur lors de la vérification du statut de soumission:",
+            error
+          )
+        } finally {
+          setIsLoading(false)
         }
-        setIsLoading(false)
       }
     }
     checkSubmissionStatus()
@@ -49,17 +60,31 @@ export default function Prerequis() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (user && answers) {
-      const response = await fetch("/api/prerequis", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId: user.id, answers }),
-      })
-      if (response.ok) {
-        alert("Réponses enregistrées !")
-        setHasSubmitted(true)
-      } else {
+      try {
+        const response = await fetch("/api/prerequis", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user.id,
+            answers: {
+              presentation: answers.presentation,
+              structuresDonnees: answers.structuresDonnees,
+              bouclesIterations: answers.bouclesIterations,
+              mathematiques: answers.mathematiques,
+              numpy: answers.numpy,
+              materiel: answers.materiel,
+            },
+          }),
+        })
+        if (response.ok) {
+          alert("Réponses enregistrées !")
+          setHasSubmitted(true)
+        } else {
+          throw new Error("Erreur lors de l'enregistrement")
+        }
+      } catch (error) {
         alert("Une erreur est survenue lors de l'enregistrement des réponses.")
       }
     }
@@ -68,17 +93,20 @@ export default function Prerequis() {
   if (hasSubmitted && answers) {
     return (
       <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-6">Questionnaire de prérequis</h1>
+        <h1 className="text-3xl font-bold mb-6">
+          {"Questionnaire de prérequis"}
+        </h1>
         <p className="mb-4">
-          Vous avez déjà rempli le questionnaire. Merci pour votre participation
-          !
+          {
+            "Vous avez déjà rempli le questionnaire. Merci pour votre participation !"
+          }
         </p>
         <h2 className="text-2xl font-semibold mb-4">
-          Récapitulatif de vos réponses :
+          {"Récapitulatif de vos réponses :"}
         </h2>
         <Card className="mb-4">
           <CardHeader>
-            <CardTitle>Présentation</CardTitle>
+            <CardTitle>{"Présentation"}</CardTitle>
           </CardHeader>
           <CardContent>
             <p>{answers.presentation}</p>
@@ -86,7 +114,9 @@ export default function Prerequis() {
         </Card>
         <Card className="mb-4">
           <CardHeader>
-            <CardTitle>Maîtrise des Structures de données en Python</CardTitle>
+            <CardTitle>
+              {"Maîtrise des Structures de données en Python"}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p>{answers.structuresDonnees}</p>
@@ -94,7 +124,7 @@ export default function Prerequis() {
         </Card>
         <Card className="mb-4">
           <CardHeader>
-            <CardTitle>Maîtrise des Boucles et itérations</CardTitle>
+            <CardTitle>{"Maîtrise des Boucles et itérations"}</CardTitle>
           </CardHeader>
           <CardContent>
             <p>{answers.bouclesIterations}</p>
@@ -102,7 +132,9 @@ export default function Prerequis() {
         </Card>
         <Card className="mb-4">
           <CardHeader>
-            <CardTitle>Maîtrise des Notions de base en mathématiques</CardTitle>
+            <CardTitle>
+              {"Maîtrise des Notions de base en mathématiques"}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p>{answers.mathematiques}</p>
@@ -110,7 +142,7 @@ export default function Prerequis() {
         </Card>
         <Card className="mb-4">
           <CardHeader>
-            <CardTitle>Maîtrise de NumPy</CardTitle>
+            <CardTitle>{"Maîtrise de NumPy"}</CardTitle>
           </CardHeader>
           <CardContent>
             <p>{answers.numpy}</p>
@@ -118,14 +150,14 @@ export default function Prerequis() {
         </Card>
         <Card className="mb-4">
           <CardHeader>
-            <CardTitle>Matériel requis</CardTitle>
+            <CardTitle>{"Matériel requis"}</CardTitle>
           </CardHeader>
           <CardContent>
             <p>{answers.materiel}</p>
           </CardContent>
         </Card>
         <p className="text-sm text-gray-500">
-          Date de soumission :{" "}
+          {"Date de soumission : "}
           {new Date(answers.dateSubmission).toLocaleString()}
         </p>
       </div>
@@ -135,11 +167,13 @@ export default function Prerequis() {
   return (
     <ProtectedRoute>
       <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-6">Questionnaire de prérequis</h1>
+        <h1 className="text-3xl font-bold mb-6">
+          {"Questionnaire de prérequis"}
+        </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Présentation</CardTitle>
+              <CardTitle>{"Présentation"}</CardTitle>
             </CardHeader>
             <CardContent>
               <Textarea
@@ -160,7 +194,7 @@ export default function Prerequis() {
           <Card>
             <CardHeader>
               <CardTitle>
-                1. Maîtrise des Structures de données en Python
+                {"1. Maîtrise des Structures de données en Python"}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -188,7 +222,7 @@ export default function Prerequis() {
 
           <Card>
             <CardHeader>
-              <CardTitle>2. Maîtrise des Boucles et itérations</CardTitle>
+              <CardTitle>{"2. Maîtrise des Boucles et itérations"}</CardTitle>
             </CardHeader>
             <CardContent>
               <RadioGroup
@@ -216,7 +250,7 @@ export default function Prerequis() {
           <Card>
             <CardHeader>
               <CardTitle>
-                3. Maîtrise des Notions de base en mathématiques
+                {"3. Maîtrise des Notions de base en mathématiques"}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -247,7 +281,7 @@ export default function Prerequis() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Maîtrise de NumPy</CardTitle>
+              <CardTitle>{"Maîtrise de NumPy"}</CardTitle>
             </CardHeader>
             <CardContent>
               <RadioGroup
@@ -270,7 +304,7 @@ export default function Prerequis() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Matériel requis</CardTitle>
+              <CardTitle>{"Matériel requis"}</CardTitle>
             </CardHeader>
             <CardContent>
               <RadioGroup
@@ -282,13 +316,13 @@ export default function Prerequis() {
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="oui" id="materiel-oui" />
                   <Label htmlFor="materiel-oui">
-                    J'ai un PC avec Git, VSCode et Python installés
+                    {"J'ai un PC avec Git, VSCode et Python installés"}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="non" id="materiel-non" />
                   <Label htmlFor="materiel-non">
-                    Je n'ai pas tout le matériel requis
+                    {"Je n'ai pas tout le matériel requis"}
                   </Label>
                 </div>
               </RadioGroup>
@@ -297,7 +331,7 @@ export default function Prerequis() {
 
           <CardFooter>
             <Button type="submit" className="w-full">
-              Soumettre
+              {"Soumettre"}
             </Button>
           </CardFooter>
         </form>

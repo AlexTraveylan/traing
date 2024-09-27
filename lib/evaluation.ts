@@ -1,4 +1,6 @@
+import { Evaluation } from "@prisma/client"
 import { z } from "zod"
+import prisma from "./prisma-client"
 
 // Schéma de validation pour les données d'évaluation
 export const evaluationSchema = z.object({
@@ -9,30 +11,39 @@ export const evaluationSchema = z.object({
 
 export type EvaluationData = z.infer<typeof evaluationSchema>
 
-export interface EvaluationRecord extends EvaluationData {
-  date: string
-}
-
-export const defaultEvaluationAnswers: EvaluationRecord = {
+export const defaultEvaluationAnswers: Omit<
+  Evaluation,
+  "id" | "userId" | "createdAt"
+> = {
   comprehension: 0,
   difficultes: "-",
   commentaires: "-",
-  date: "-",
 }
 
-const evaluationResponses: Record<number, EvaluationRecord> = {}
-
-export function addEvaluation(userId: number, data: EvaluationData): void {
-  evaluationResponses[userId] = {
-    ...data,
-    date: new Date().toISOString(),
-  }
+export async function addEvaluation(
+  userId: number,
+  data: EvaluationData
+): Promise<Evaluation> {
+  return prisma.evaluation.create({
+    data: {
+      userId,
+      ...data,
+      commentaires: data.commentaires || "",
+    },
+  })
 }
 
-export function getEvaluation(userId: number): EvaluationRecord | null {
-  return evaluationResponses[userId] || null
+export async function getEvaluation(
+  userId: number
+): Promise<Evaluation | null> {
+  return prisma.evaluation.findFirst({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+  })
 }
 
-export function getAllEvaluations(): Record<number, EvaluationRecord> {
-  return evaluationResponses
+export async function getAllEvaluations(): Promise<Evaluation[]> {
+  return prisma.evaluation.findMany({
+    orderBy: { createdAt: "desc" },
+  })
 }

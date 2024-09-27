@@ -64,10 +64,10 @@ export default function Header() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/profile">Profil</Link>
+          <Link href="/profile">{"Profil"}</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/settings">Paramètres</Link>
+          <Link href="/settings">{"Paramètres"}</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="text-red-600">
@@ -89,7 +89,7 @@ export default function Header() {
             <UserMenu />
           ) : (
             <Button asChild variant="default">
-              <Link href="/login">Se connecter</Link>
+              <Link href="/login">{"Se connecter"}</Link>
             </Button>
           )}
         </nav>
@@ -107,21 +107,21 @@ export default function Header() {
                   href="/profile"
                   className="text-gray-600 hover:text-primary"
                 >
-                  Profil
+                  {"Profil"}
                 </Link>
                 <Link
                   href="/settings"
                   className="text-gray-600 hover:text-primary"
                 >
-                  Paramètres
+                  {"Paramètres"}
                 </Link>
                 <Button onClick={handleLogout} variant="destructive">
-                  Se déconnecter
+                  {"Se déconnecter"}
                 </Button>
               </>
             ) : (
               <Button asChild variant="default">
-                <Link href="/login">Se connecter</Link>
+                <Link href="/login">{"Se connecter"}</Link>
               </Button>
             )}
           </nav>

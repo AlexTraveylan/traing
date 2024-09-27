@@ -1,58 +1,62 @@
-export interface Signature {
-  userId: number
-  date: string
-  time: string
-}
+import prisma from "./prisma-client"
 
-interface AttendanceRecord {
-  [date: string]: Signature[]
-}
+export async function signerEmargement(userId: number) {
+  const aujourdhui = new Date()
+  aujourdhui.setHours(0, 0, 0, 0)
 
-export const defaultSignatureAnswers: Signature = {
-  userId: 0,
-  date: "-",
-  time: "-",
-}
+  const emargementExistant = await prisma.emargement.findFirst({
+    where: {
+      userId: userId,
+      date: {
+        gte: aujourdhui,
+        lt: new Date(aujourdhui.getTime() + 24 * 60 * 60 * 1000),
+      },
+    },
+  })
 
-const attendanceRecords: AttendanceRecord = {}
-
-export async function signAttendance(userId: number) {
-  const now = new Date()
-  const today = now.toISOString().split("T")[0]
-  const time = now.toTimeString().split(" ")[0]
-
-  if (!attendanceRecords[today]) {
-    attendanceRecords[today] = []
-  }
-
-  if (
-    attendanceRecords[today].some((signature) => signature.userId === userId)
-  ) {
+  if (emargementExistant) {
     return { success: false, message: "Vous avez déjà émargé aujourd'hui." }
   }
 
-  attendanceRecords[today].push({ userId, date: today, time })
+  await prisma.emargement.create({
+    data: {
+      userId: userId,
+      date: new Date(),
+    },
+  })
 
   return { success: true, message: "Émargement enregistré avec succès." }
 }
 
-export function getAllSignatures(): Signature[] {
-  return Object.values(attendanceRecords).flat()
+export async function obtenirTousLesEmargements() {
+  return await prisma.emargement.findMany({
+    include: { user: true },
+  })
 }
 
-export async function checkSignatureStatus(userId: number) {
-  const today = new Date().toISOString().split("T")[0]
-  const signature = attendanceRecords[today]?.find((s) => s.userId === userId)
+export async function verifierStatutEmargement(userId: number) {
+  const aujourdhui = new Date()
+  aujourdhui.setHours(0, 0, 0, 0)
 
-  if (signature) {
+  const emargement = await prisma.emargement.findFirst({
+    where: {
+      userId: userId,
+      date: {
+        gte: aujourdhui,
+        lt: new Date(aujourdhui.getTime() + 24 * 60 * 60 * 1000),
+      },
+    },
+  })
+
+  if (emargement) {
     return {
-      hasSigned: true,
-      signatureInfo: {
-        date: signature.date,
-        time: signature.time,
+      aEmarger: true,
+      infoEmargement: {
+        date: emargement.date.toISOString().split("T")[0],
+        heure: emargement.date.toTimeString().split(" ")[0],
       },
     }
   }
 
-  return { hasSigned: false }
+  return { aEmarger: false }
 }

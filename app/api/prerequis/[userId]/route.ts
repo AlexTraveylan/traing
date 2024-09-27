@@ -6,11 +6,17 @@ export async function GET(
   { params }: { params: { userId: string } }
 ) {
   const userId = parseInt(params.userId)
-  const answers = getPrerequisAnswers(userId)
 
-  if (answers) {
+  try {
+    const answers = await getPrerequisAnswers(userId)
     return NextResponse.json({ hasSubmitted: true, answers })
-  } else {
-    return NextResponse.json({ hasSubmitted: false })
+  } catch (error) {
+    if (error instanceof Error && error.message === "Prerequis not found") {
+      return NextResponse.json({ hasSubmitted: false })
+    }
+    return NextResponse.json(
+      { error: "Une erreur est survenue" },
+      { status: 500 }
+    )
   }
 }

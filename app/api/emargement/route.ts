@@ -1,4 +1,4 @@
-import { getAllSignatures, signAttendance } from "@/lib/emargement"
+import { obtenirTousLesEmargements, signerEmargement } from "@/lib/emargement"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
@@ -11,11 +11,11 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  const result = await signAttendance(userId)
-  return NextResponse.json(result)
+  const resultat = await signerEmargement(userId)
+  return NextResponse.json(resultat)
 }
 
 export async function GET() {
-  const signatures = getAllSignatures()
-  return NextResponse.json({ signatures })
+  const emargements = await obtenirTousLesEmargements()
+  return NextResponse.json({ emargements })
 }
